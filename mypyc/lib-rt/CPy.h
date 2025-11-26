@@ -958,6 +958,21 @@ static inline int CPyObject_GenericSetAttr(PyObject *self, PyObject *name, PyObj
     return _PyObject_GenericSetAttrWithDict(self, name, value, NULL);
 }
 
+typedef PyObject *(*SetupFunction)(PyObject *);
+
+static inline PyObject *CPy_SetupObject(PyObject *type) {
+    PyTypeObject *tp = (PyTypeObject *)type;
+    PyMethodDef *def = tp->tp_methods;
+    while (def && strcmp(def->ml_name, "__internal_mypyc_setup")) {
+        ++def;
+    }
+    if (!def) {
+        return NULL;
+    }
+
+    return ((SetupFunction)(void(*)(void))def->ml_meth)(type);
+}
+
 #if CPY_3_11_FEATURES
 PyObject *CPy_GetName(PyObject *obj);
 #endif
