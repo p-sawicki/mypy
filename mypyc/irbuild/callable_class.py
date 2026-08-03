@@ -87,7 +87,7 @@ def setup_callable_class(builder: IRBuilder) -> None:
     self_target = builder.add_self_to_env(callable_class_ir)
     builder.fn_info.callable_class.self_reg = builder.read(self_target, builder.fn_info.fitem.line)
 
-    if not builder.fn_info.in_non_ext and builder.fn_info.is_coroutine:
+    if builder.fn_info.is_coroutine:
         add_coroutine_properties(builder, callable_class_ir, builder.fn_info.name)
 
 
@@ -98,6 +98,7 @@ def add_coroutine_properties(
     Needed to make introspection functions like inspect.iscoroutinefunction work.
     """
     callable_class_ir.coroutine_name = coroutine_name
+    callable_class_ir.needs_getseters = True
     callable_class_ir.attributes[CPYFUNCTION_NAME] = object_rprimitive
 
     properties = {
@@ -239,6 +240,6 @@ def instantiate_callable_class(builder: IRBuilder, fn_info: FuncInfo) -> Value:
     # Initialize function wrapper for callable classes. As opposed to regular functions,
     # each instance of a callable class needs its own wrapper because they might be instantiated
     # inside other functions.
-    if not fn_info.in_non_ext and fn_info.is_coroutine:
+    if fn_info.is_coroutine:
         builder.add_coroutine_setup_call(fn_info.callable_class.ir.name, func_reg)
     return func_reg
