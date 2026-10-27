@@ -43,6 +43,8 @@ print('\nExit status:', result[2])
 
 """
 
+# TEST
+
 from __future__ import annotations
 
 import sys
