@@ -48,6 +48,8 @@ from mypyc.namegen import exported_name
 from mypyc.options import CompilerOptions, TargetPython
 
 
+# TEST CHANGE
+
 class ModDesc(NamedTuple):
     module: str
     c_files: list[str]
